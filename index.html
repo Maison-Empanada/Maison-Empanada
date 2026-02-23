@@ -4,17 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maison Empanada</title>
+    <title>Maison Empanadas</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
         rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
-    <div class="bg-pattern"></div>
+    <!-- Custom Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- Animated Ambient Background -->
+    <div class="ambient-bg">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
+    </div>
 
     <!-- Navigation -->
     <nav id="navbar">
@@ -23,7 +34,7 @@
                 <div class="logo-placeholder">
                     <span>ME</span>
                 </div>
-                <h2>Maison Empanada</h2>
+                <h2>Maison Empanadas</h2>
             </div>
             <ul class="nav-links">
                 <li><a href="#home">Inicio</a></li>
@@ -31,10 +42,16 @@
                 <li><a href="#menu">Comida</a></li>
                 <li><a href="#contact">Contacto</a></li>
             </ul>
-            <div class="hamburger">
-                <div class="line"></div>
-                <div class="line"></div>
-                <div class="line"></div>
+            <div class="nav-actions">
+                <button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema">
+                    <i data-lucide="moon" class="icon-moon"></i>
+                    <i data-lucide="sun" class="icon-sun"></i>
+                </button>
+                <div class="hamburger">
+                    <div class="line"></div>
+                    <div class="line"></div>
+                    <div class="line"></div>
+                </div>
             </div>
         </div>
     </nav>
@@ -45,7 +62,9 @@
             <h1 class="hero-stagger">El Arte de la <span class="highlight">Empanada</span></h1>
             <p class="slogan hero-stagger">"En nuestra empresa no vendemos... Entregamos antojos peligrosamente
                 repetibles."</p>
-            <a href="#menu" class="cta-button hero-stagger">Ver Menú</a>
+            <div class="hero-stagger magnetic-wrap" style="display:inline-block;">
+                <a href="#menu" class="cta-button magnetic-btn">Ver Menú</a>
+            </div>
         </div>
         <div class="hero-visual">
             <div class="blob"></div>
@@ -71,7 +90,7 @@
                     <div class="company-info">
                         <h3>Información de la Empresa</h3>
                         <ul>
-                            <li><strong>Nombre:</strong> Maison Empanada</li>
+                            <li><strong>Nombre:</strong> Maison Empanadas</li>
                             <li><strong>WhatsApp:</strong> <a href="https://wa.me/50257134072" target="_blank">+502 5713
                                     4072</a> <span class="info-note">(pedidos con 3 días de anticipación)</span></li>
                             <li><strong>Email:</strong> <a
@@ -103,6 +122,9 @@
             <div class="menu-grid">
                 <!-- Empanadas -->
                 <div class="menu-item" data-category="empanadas">
+                    <div class="glare-container">
+                        <div class="glare"></div>
+                    </div>
                     <div class="item-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?q=80&w=600&auto=format&fit=crop"
                             alt="Empanadas de pollo" class="placeholder-img">
@@ -114,6 +136,9 @@
                 </div>
 
                 <div class="menu-item" data-category="empanadas">
+                    <div class="glare-container">
+                        <div class="glare"></div>
+                    </div>
                     <div class="item-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1517244683847-7456b63c5969?q=80&w=600&auto=format&fit=crop"
                             alt="Empanadas dulces" class="placeholder-img">
@@ -125,6 +150,9 @@
                 </div>
 
                 <div class="menu-item" data-category="empanadas">
+                    <div class="glare-container">
+                        <div class="glare"></div>
+                    </div>
                     <div class="item-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=600&auto=format&fit=crop"
                             alt="Empanadas saladas" class="placeholder-img">
@@ -136,6 +164,9 @@
                 </div>
 
                 <div class="menu-item" data-category="empanadas">
+                    <div class="glare-container">
+                        <div class="glare"></div>
+                    </div>
                     <div class="item-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1582169505937-b9992bd01af9?q=80&w=600&auto=format&fit=crop"
                             alt="Empanadas personalizadas" class="placeholder-img">
@@ -148,6 +179,9 @@
 
                 <!-- Trensas -->
                 <div class="menu-item" data-category="trensas">
+                    <div class="glare-container">
+                        <div class="glare"></div>
+                    </div>
                     <div class="item-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=600&auto=format&fit=crop"
                             alt="Trensas de pollo" class="placeholder-img">
@@ -159,6 +193,9 @@
                 </div>
 
                 <div class="menu-item" data-category="trensas">
+                    <div class="glare-container">
+                        <div class="glare"></div>
+                    </div>
                     <div class="item-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1550508139-b9c1dceaf102?q=80&w=600&auto=format&fit=crop"
                             alt="Trensas de jamón y queso" class="placeholder-img">
@@ -170,6 +207,9 @@
                 </div>
 
                 <div class="menu-item" data-category="trensas">
+                    <div class="glare-container">
+                        <div class="glare"></div>
+                    </div>
                     <div class="item-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1619420674819-272e542cc089?q=80&w=600&auto=format&fit=crop"
                             alt="Trensas personalizadas" class="placeholder-img">
@@ -193,15 +233,15 @@
                     </p>
                     <div class="contact-details">
                         <div class="detail-item">
-                            <span class="icon">📍</span>
-                            <p>Maison Empanada</p>
+                            <i data-lucide="map-pin" class="icon"></i>
+                            <p>Maison Empanadas</p>
                         </div>
                         <div class="detail-item">
-                            <span class="icon">📱</span>
+                            <i data-lucide="phone" class="icon"></i>
                             <p>+502 5713 4072</p>
                         </div>
                         <div class="detail-item">
-                            <span class="icon">✉️</span>
+                            <i data-lucide="mail" class="icon"></i>
                             <p>maisonempanada@gmail.com</p>
                         </div>
                     </div>
@@ -264,18 +304,11 @@
                                 placeholder="Detalles de tu consulta..."></textarea>
                         </div>
 
-                        <!-- Simple JS CAPTCHA -->
+                        <!-- Google reCAPTCHA v2 -->
                         <div class="form-group captcha-container"
-                            style="background: rgba(233, 196, 106, 0.1); padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; border: 1px dashed var(--secondary-color);">
-                            <div style="flex: 1;">
-                                <label for="captchaInput" style="margin-bottom: 0; font-size: 0.9rem;">Verificación
-                                    humana:</label>
-                                <span id="captchaQuestion"
-                                    style="font-weight: 800; font-size: 1.2rem; color: var(--primary-dark);">¿? + ¿?
-                                    =</span>
-                            </div>
-                            <input type="number" id="captchaInput" required placeholder="Respuesta"
-                                style="width: 100px; padding: 0.8rem; margin: 0; text-align: center;">
+                            style="margin-bottom: 1.5rem; display: flex; justify-content: center;">
+                            <div class="g-recaptcha" data-sitekey="6LdoDnUsAAAAAKDAnbdEkYE76TCzqckBHCb1abtp"
+                                data-theme="light" id="google-recaptcha"></div>
                         </div>
 
                         <button type="submit" class="submit-button" id="submitBtn">
@@ -291,7 +324,7 @@
     <footer>
         <div class="footer-content">
             <div class="footer-logo">ME</div>
-            <p>&copy; 2026 Maison Empanada. Todos los derechos reservados.</p>
+            <p>&copy; 2026 Maison Empanadas. Todos los derechos reservados.</p>
             <p class="footer-note">maisonempanadas.com</p>
         </div>
     </footer>
