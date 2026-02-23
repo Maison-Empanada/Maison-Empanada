@@ -51,7 +51,7 @@
                 <li><a href="#home">Inicio</a></li>
                 <li><a href="#about">Nosotros</a></li>
                 <li><a href="#menu">Comida</a></li>
-                <li><a href="#contact">Contacto</a></li>
+                <li><a href="pedido.html" class="nav-cta">Haz tu pedido</a></li>
             </ul>
             <div class="nav-actions">
                 <button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema">
@@ -73,8 +73,9 @@
             <h1 class="hero-stagger">El Arte de la <span class="highlight">Empanada</span></h1>
             <p class="slogan hero-stagger">"En nuestra empresa no vendemos... Entregamos antojos peligrosamente
                 repetibles."</p>
-            <div class="hero-stagger magnetic-wrap" style="display:inline-block;">
-                <a href="#menu" class="cta-button magnetic-btn">Ver Menú</a>
+            <div class="hero-stagger magnetic-wrap" style="display:inline-flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="pedido.html" class="cta-button primary magnetic-btn">Haz tu pedido</a>
+                <a href="#menu" class="cta-button secondary magnetic-btn">Ver Menú</a>
             </div>
         </div>
         <div class="hero-visual">
@@ -131,11 +132,7 @@
             </div>
 
             <div class="menu-grid">
-                <!-- Empanadas -->
                 <div class="menu-item" data-category="empanadas">
-                    <div class="glare-container">
-                        <div class="glare"></div>
-                    </div>
                     <div class="item-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?q=80&w=600&auto=format&fit=crop"
                             alt="Empanadas de pollo" class="placeholder-img">
@@ -143,56 +140,48 @@
                     <div class="item-content">
                         <h3>Empanadas de Pollo</h3>
                         <p>Clásicas y jugosas con nuestro sazón especial.</p>
+                        <a href="pedido.html?item=emp-pollo" class="menu-order-btn">Pedir</a>
                     </div>
                 </div>
 
                 <div class="menu-item" data-category="empanadas">
-                    <div class="glare-container">
-                        <div class="glare"></div>
-                    </div>
                     <div class="item-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1517244683847-7456b63c5969?q=80&w=600&auto=format&fit=crop"
+                            alt="Empanadas de res" class="placeholder-img">
+                    </div>
+                    <div class="item-content">
+                        <h3>Empanadas de Res</h3>
+                        <p>Res premium sazonada con ingredientes frescos.</p>
+                        <a href="pedido.html?item=emp-res" class="menu-order-btn">Pedir</a>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="empanadas">
+                    <div class="item-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=600&auto=format&fit=crop"
+                            alt="Empanadas de jamón y queso" class="placeholder-img">
+                    </div>
+                    <div class="item-content">
+                        <h3>Jamón y Queso</h3>
+                        <p>La combinación favorita, cremosa y deliciosa.</p>
+                        <a href="pedido.html?item=emp-jamon" class="menu-order-btn">Pedir</a>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="empanadas">
+                    <div class="item-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=600&auto=format&fit=crop"
                             alt="Empanadas dulces" class="placeholder-img">
                     </div>
                     <div class="item-content">
                         <h3>Empanadas Dulces</h3>
-                        <p>El toque dulce perfecto para cualquier momento.</p>
-                    </div>
-                </div>
-
-                <div class="menu-item" data-category="empanadas">
-                    <div class="glare-container">
-                        <div class="glare"></div>
-                    </div>
-                    <div class="item-image-wrapper">
-                        <img src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=600&auto=format&fit=crop"
-                            alt="Empanadas saladas" class="placeholder-img">
-                    </div>
-                    <div class="item-content">
-                        <h3>Empanadas Saladas</h3>
-                        <p>Variedad de rellenos salados para todo paladar.</p>
-                    </div>
-                </div>
-
-                <div class="menu-item" data-category="empanadas">
-                    <div class="glare-container">
-                        <div class="glare"></div>
-                    </div>
-                    <div class="item-image-wrapper">
-                        <img src="https://images.unsplash.com/photo-1582169505937-b9992bd01af9?q=80&w=600&auto=format&fit=crop"
-                            alt="Empanadas personalizadas" class="placeholder-img">
-                    </div>
-                    <div class="item-content">
-                        <h3>Empanadas Personalizadas</h3>
-                        <p>Elige tus ingredientes favoritos.</p>
+                        <p>Rellenas de fruta fresca para un toque dulce.</p>
+                        <a href="pedido.html?item=emp-dulce" class="menu-order-btn">Pedir</a>
                     </div>
                 </div>
 
                 <!-- Trensas -->
                 <div class="menu-item" data-category="trensas">
-                    <div class="glare-container">
-                        <div class="glare"></div>
-                    </div>
                     <div class="item-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=600&auto=format&fit=crop"
                             alt="Trensas de pollo" class="placeholder-img">
@@ -200,13 +189,11 @@
                     <div class="item-content">
                         <h3>Trensas de Pollo</h3>
                         <p>Masa trenzada rellena de un delicioso guiso de pollo.</p>
+                        <a href="pedido.html?item=tren-pollo" class="menu-order-btn">Pedir</a>
                     </div>
                 </div>
 
                 <div class="menu-item" data-category="trensas">
-                    <div class="glare-container">
-                        <div class="glare"></div>
-                    </div>
                     <div class="item-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1550508139-b9c1dceaf102?q=80&w=600&auto=format&fit=crop"
                             alt="Trensas de jamón y queso" class="placeholder-img">
@@ -214,134 +201,46 @@
                     <div class="item-content">
                         <h3>Trensas de Jamón y Queso</h3>
                         <p>La combinación perfecta en cada bocado.</p>
+                        <a href="pedido.html?item=tren-jq" class="menu-order-btn">Pedir</a>
                     </div>
                 </div>
 
-                <div class="menu-item" data-category="trensas">
-                    <div class="glare-container">
-                        <div class="glare"></div>
-                    </div>
+                <!-- Especiales -->
+                <div class="menu-item" data-category="especiales">
                     <div class="item-image-wrapper">
-                        <img src="https://images.unsplash.com/photo-1619420674819-272e542cc089?q=80&w=600&auto=format&fit=crop"
-                            alt="Trensas personalizadas" class="placeholder-img">
+                        <img src="https://images.unsplash.com/photo-1541592391523-5ae8c2c88d10?q=80&w=600&auto=format&fit=crop"
+                            alt="Pack Fiesta" class="placeholder-img">
                     </div>
                     <div class="item-content">
-                        <h3>Trensas Personalizadas</h3>
-                        <p>Crea tu trensa ideal con los ingredientes que prefieras.</p>
+                        <h3>Pack Fiesta (12)</h3>
+                        <p>Un surtido variado perfecto para tus eventos.</p>
+                        <a href="pedido.html?item=pack-party" class="menu-order-btn">Pedir</a>
                     </div>
                 </div>
+
             </div>
         </div>
     </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
+    <!-- Footer with Contact Info -->
+    <footer class="footer-v2">
         <div class="section-container">
-            <div class="contact-card">
-                <div class="contact-info-panel">
-                    <h2>Haz tu Pedido</h2>
-                    <p>Escríbenos para consultas o pedidos (recuerda que los pedidos requieren 3 días de anticipación).
-                    </p>
-                    <div class="contact-details">
-                        <div class="detail-item">
-                            <i data-lucide="map-pin" class="icon"></i>
-                            <p>Maison Empanadas</p>
-                        </div>
-                        <div class="detail-item">
-                            <i data-lucide="phone" class="icon"></i>
-                            <p>+502 5713 4072</p>
-                        </div>
-                        <div class="detail-item">
-                            <i data-lucide="mail" class="icon"></i>
-                            <p>maisonempanada@gmail.com</p>
-                        </div>
-                    </div>
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo">ME</div>
+                    <h3>Maison Empanadas</h3>
+                    <p>Sabor artesanal con un toque de elegancia.</p>
                 </div>
-
-                <div class="contact-form-panel">
-                    <form id="contactForm">
-                        <!-- Honeypot Field (Hidden from humans) -->
-                        <div class="hp-field" style="display:none !important;" aria-hidden="true">
-                            <label for="nickname">Leave this field blank</label>
-                            <input type="text" id="nickname" name="nickname" autocomplete="off">
-                        </div>
-                        <div class="form-group">
-                            <label for="name">Nombre</label>
-                            <input type="text" id="name" name="name" required placeholder="Tu nombre">
-                        </div>
-                        <div class="form-group" id="emailGroup">
-                            <label for="email">Correo Electrónico / Teléfono</label>
-                            <input type="text" id="email" name="email" required
-                                placeholder="tu@correo.com o tu número de WhatsApp">
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="contactPref">Preferencia de Contacto</label>
-                                <select id="contactPref" name="contactPref" required>
-                                    <option value="whatsapp">WhatsApp / Teléfono</option>
-                                    <option value="email">Correo Electrónico</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="orderType">Tipo de Pedido</label>
-                                <select id="orderType" name="orderType" required>
-                                    <option value="personal">Pedido Personal (Sin anticipación)</option>
-                                    <option value="evento">Evento/Fiesta (Gran cantidad)</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="deliveryDate">Fecha Solicitada</label>
-                                <input type="date" id="deliveryDate" name="deliveryDate" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="quantity">Cantidad Estimada</label>
-                                <input type="number" id="quantity" name="quantity" min="1" placeholder="Ej: 20">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="flavor">Sabor Favorito / Preferencia</label>
-                            <select id="flavor" name="flavor">
-                                <option value="variado">Surtido Variado</option>
-                                <option value="pollo">Pollo</option>
-                                <option value="res">Res</option>
-                                <option value="jamon_queso">Jamón y Queso</option>
-                                <option value="dulce">Dulces</option>
-                                <option value="personalizado">Personalizado (Describir abajo)</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="message">Mensaje Adicional</label>
-                            <textarea id="message" name="message" rows="3" required
-                                placeholder="Detalles de tu consulta..."></textarea>
-                        </div>
-
-                        <!-- Google reCAPTCHA v2 -->
-                        <div class="form-group captcha-container"
-                            style="margin-bottom: 1.5rem; display: flex; justify-content: center;">
-                            <div class="g-recaptcha" data-sitekey="6LdoDnUsAAAAAKDAnbdEkYE76TCzqckBHCb1abtp"
-                                data-theme="light" id="google-recaptcha"></div>
-                        </div>
-
-                        <button type="submit" class="submit-button" id="submitBtn">
-                            <span>Enviar Mensaje</span>
-                        </button>
-                        <p id="formStatus" class="form-status"></p>
-                    </form>
+                <div class="footer-info">
+                    <h4>Contacto Directo</h4>
+                    <p><i data-lucide="phone"></i> +502 5713 4072</p>
+                    <p><i data-lucide="mail"></i> <a href="#" id="secure-email" data-user="maisonempanada"
+                            data-domain="gmail.com" class="obfuscated-email">[Email]</a></p>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-logo">ME</div>
-            <p>&copy; 2026 Maison Empanadas. Todos los derechos reservados.</p>
-            <p class="footer-note">maisonempanadas.com</p>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Maison Empanadas. Todos los derechos reservados.</p>
+            </div>
         </div>
     </footer>
 
