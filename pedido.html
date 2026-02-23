@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacer Pedido | Maison Empanadas</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+        rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://unpkg.com/lucide@latest 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://images.unsplash.com data:; frame-src https://www.google.com/recaptcha/; connect-src 'self' https://discord.com;">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+</head>
+
+<body class="order-page">
+    <!-- Custom Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- Animated Ambient Background -->
+    <div class="ambient-bg">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="scrolled"> <!-- Force scrolled appearance on subpages -->
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <div class="logo-placeholder">
+                    <span>ME</span>
+                </div>
+                <h2>Maison Empanadas</h2>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html#home">Inicio</a></li>
+                <li><a href="index.html#about">Nosotros</a></li>
+                <li><a href="index.html#menu">Comida</a></li>
+                <li><a href="pedido.html" class="nav-cta">Haz tu pedido</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema">
+                    <i data-lucide="moon" class="icon-moon"></i>
+                    <i data-lucide="sun" class="icon-sun"></i>
+                </button>
+                <div class="hamburger">
+                    <div class="line"></div>
+                    <div class="line"></div>
+                    <div class="line"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="order-container">
+        <header class="order-header">
+            <h1 class="hero-stagger">Personaliza tu <span class="highlight">Antojo</span></h1>
+            <p class="hero-stagger">Selecciona tus empanadas favoritas y nosotros nos encargamos del resto.</p>
+        </header>
+
+        <div class="order-grid-layout">
+            <!-- Product Selection -->
+            <div class="products-section">
+                <div class="order-tabs">
+                    <button class="tab-btn active" data-tab="empanadas">Empanadas</button>
+                    <button class="tab-btn" data-tab="trensas">Trensas</button>
+                    <button class="tab-btn" data-tab="especiales">Especiales</button>
+                </div>
+
+                <div id="product-grid" class="product-selection-grid">
+                    <!-- Script will inject products here -->
+                </div>
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <aside class="order-summary-card">
+                <div class="summary-content">
+                    <h3>Resumen del Pedido</h3>
+                    <div id="cart-items" class="cart-items-list">
+                        <p class="empty-cart">Aún no has seleccionado nada.</p>
+                    </div>
+                    <div class="summary-total">
+                        <span>Total de unidades:</span>
+                        <strong id="total-qty">0</strong>
+                    </div>
+
+                    <button id="proceed-to-checkout" class="checkout-btn" disabled>
+                        <span>Continuar con los datos</span>
+                        <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Checkout Form (Initially hidden) -->
+        <section id="checkout-section" class="checkout-section hide">
+            <div class="checkout-card">
+                <h2>Datos de Entrega y Contacto</h2>
+                <form id="orderForm">
+                    <!-- Honeypot -->
+                    <div class="hp-field" style="display:none !important;" aria-hidden="true">
+                        <input type="text" id="nickname" name="nickname" autocomplete="off">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Nombre Completo</label>
+                            <input type="text" id="name" name="name" required placeholder="Tu nombre">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">WhatsApp / Teléfono</label>
+                            <input type="text" id="email" name="email" required placeholder="Tu número">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="deliveryDate">Fecha de Entrega</label>
+                            <input type="date" id="deliveryDate" name="deliveryDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="orderType">Momento del día</label>
+                            <select id="orderType" name="orderType" required>
+                                <option value="manana">Mañana (7:00 AM - 12:00 PM)</option>
+                                <option value="tarde">Tarde (1:00 PM - 6:00 PM)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Instrucciones especiales / Dirección</label>
+                        <textarea id="message" name="message" rows="3"
+                            placeholder="Ej: Sin cebolla, o tu dirección exacta..."></textarea>
+                    </div>
+
+                    <!-- reCAPTCHA -->
+                    <div class="form-group captcha-container"
+                        style="display: flex; justify-content: center; margin: 2rem 0;">
+                        <div id="google-recaptcha"></div>
+                    </div>
+
+                    <button type="submit" class="submit-button" id="submitBtn">
+                        <span>Finalizar Pedido</span>
+                    </button>
+                    <p id="formStatus" class="form-status"></p>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer with Contact Info -->
+    <footer class="footer-v2">
+        <div class="section-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo">ME</div>
+                    <h3>Maison Empanadas</h3>
+                    <p>Sabor artesanal con un toque de elegancia.</p>
+                </div>
+                <div class="footer-info">
+                    <h4>Contacto Directo</h4>
+                    <p><i data-lucide="phone"></i> +502 5713 4072</p>
+                    <p><i data-lucide="mail"></i> <a href="#" id="secure-email" data-user="maisonempanada"
+                            data-domain="gmail.com" class="obfuscated-email">[Email]</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Maison Empanadas. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i data-lucide="shopping-bag" class="modal-icon"></i>
+                <h2>Confirmar Pedido</h2>
+                <p>Verifica que todo esté correcto.</p>
+            </div>
+            <div id="modalSummary" class="modal-summary"></div>
+            <div class="modal-actions">
+                <button id="cancelSubmit" class="modal-btn secondary">Editar</button>
+                <button id="confirmSubmit" class="modal-btn primary">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Debug Mode Button -->
+    <button id="debugBtn" class="debug-toggle">
+        <i data-lucide="terminal"></i>
+        <span>DEBUG</span>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
