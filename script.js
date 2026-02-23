@@ -15,6 +15,9 @@ window.onloadCallback = function () {
     updateRecaptchaTheme(theme);
 };
 
+// Global variable to store active reCAPTCHA widget ID
+let currentRecaptchaWidgetId = null;
+
 // Helper to update reCAPTCHA theme - Global scope for API access
 function updateRecaptchaTheme(theme) {
     const parent = document.querySelector('.captcha-container');
@@ -32,8 +35,8 @@ function updateRecaptchaTheme(theme) {
         newContainer.className = 'g-recaptcha';
         parent.appendChild(newContainer);
 
-        // Render into the new container
-        grecaptcha.render('g-recaptcha-inner', {
+        // Render into the new container and save the widget ID
+        currentRecaptchaWidgetId = grecaptcha.render('google-recaptcha', {
             'sitekey': '6LdoDnUsAAAAAKDAnbdEkYE76TCzqckBHCb1abtp',
             'theme': theme
         });
@@ -128,7 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Google reCAPTCHA Logic ---
     function checkRecaptcha() {
-        const response = grecaptcha.getResponse();
+        if (currentRecaptchaWidgetId === null) return false;
+        const response = grecaptcha.getResponse(currentRecaptchaWidgetId);
         if (response.length === 0) {
             return false;
         }
@@ -204,7 +208,9 @@ document.addEventListener('DOMContentLoaded', () => {
             formStatus.textContent = '¡Mensaje enviado con éxito! Te contactaremos pronto.';
             formStatus.classList.add('success');
             contactForm.reset();
-            grecaptcha.reset(); // Reset reCAPTCHA after success
+            if (currentRecaptchaWidgetId !== null) {
+                grecaptcha.reset(currentRecaptchaWidgetId); // Reset specific reCAPTCHA widget after success
+            }
 
             // Clear success message after 5 seconds
             setTimeout(() => {
