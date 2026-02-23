@@ -13,12 +13,23 @@
         rel="stylesheet">
     <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Security Headers (Meta-tag alternatives for static sites) -->
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://unpkg.com/lucide@latest 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://images.unsplash.com data:; frame-src https://www.google.com/recaptcha/; connect-src 'self' https://discord.com;">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
 </head>
 
 <body>
     <!-- Custom Cursor -->
     <div class="cursor-dot"></div>
     <div class="cursor-outline"></div>
+
+    <!-- Debug Mode Button -->
+    <button id="debugBtn" class="debug-toggle">
+        <i data-lucide="terminal"></i>
+        <span>DEBUG</span>
+    </button>
 
     <!-- Animated Ambient Background -->
     <div class="ambient-bg">
@@ -93,8 +104,8 @@
                             <li><strong>Nombre:</strong> Maison Empanadas</li>
                             <li><strong>WhatsApp:</strong> <a href="https://wa.me/50257134072" target="_blank">+502 5713
                                     4072</a> <span class="info-note">(pedidos con 3 días de anticipación)</span></li>
-                            <li><strong>Email:</strong> <a
-                                    href="mailto:maisonempanada@gmail.com">maisonempanada@gmail.com</a></li>
+                            <li><strong>Email:</strong> <a href="#" id="secure-email" data-user="maisonempanada"
+                                    data-domain="gmail.com" class="obfuscated-email">[Cargando email...]</a></li>
                         </ul>
                     </div>
                 </div>
@@ -249,6 +260,11 @@
 
                 <div class="contact-form-panel">
                     <form id="contactForm">
+                        <!-- Honeypot Field (Hidden from humans) -->
+                        <div class="hp-field" style="display:none !important;" aria-hidden="true">
+                            <label for="nickname">Leave this field blank</label>
+                            <input type="text" id="nickname" name="nickname" autocomplete="off">
+                        </div>
                         <div class="form-group">
                             <label for="name">Nombre</label>
                             <input type="text" id="name" name="name" required placeholder="Tu nombre">
@@ -330,6 +346,24 @@
     </footer>
 
     <script src="script.js"></script>
+
+    <!-- Information Review Modal -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i data-lucide="check-circle" class="modal-icon"></i>
+                <h2>Revisa tu Pedido</h2>
+                <p>Por favor, confirma que tus datos son correctos antes de enviar.</p>
+            </div>
+            <div id="modalSummary" class="modal-summary">
+                <!-- Data will be injected here via JS -->
+            </div>
+            <div class="modal-actions">
+                <button id="cancelSubmit" class="modal-btn secondary">Corregir</button>
+                <button id="confirmSubmit" class="modal-btn primary">Confirmar y Enviar</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
