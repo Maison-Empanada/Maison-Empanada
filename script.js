@@ -1,4 +1,65 @@
+// --- Theme Initialization (Run immediately) ---
+(function () {
+    let currentTheme = localStorage.getItem('theme');
+    if (!currentTheme) {
+        // Use system preference if no manual override exists
+        currentTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', currentTheme);
+})();
+
+// --- Google reCAPTCHA Global Callback ---
+window.onloadCallback = function () {
+    // Initialization with the detected theme
+    const theme = document.documentElement.getAttribute('data-theme') || 'light';
+    updateRecaptchaTheme(theme);
+};
+
+// Helper to update reCAPTCHA theme - Global scope for API access
+function updateRecaptchaTheme(theme) {
+    const parent = document.querySelector('.captcha-container');
+    const oldContainer = document.getElementById('google-recaptcha');
+
+    if (typeof grecaptcha !== 'undefined' && parent) {
+        // Entirely remove the old widget to force Google to forget the cached iframe
+        if (oldContainer) {
+            oldContainer.remove();
+        }
+
+        // Create a completely fresh container
+        const newContainer = document.createElement('div');
+        newContainer.id = 'google-recaptcha';
+        newContainer.className = 'g-recaptcha';
+        parent.appendChild(newContainer);
+
+        // Render into the new container
+        grecaptcha.render('g-recaptcha-inner', {
+            'sitekey': '6LdoDnUsAAAAAKDAnbdEkYE76TCzqckBHCb1abtp',
+            'theme': theme
+        });
+    }
+    // Re-initialize icons if any were in the re-rendered area
+    if (window.lucide) lucide.createIcons();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Lucide Icons
+    if (window.lucide) lucide.createIcons();
+
+    // --- Theme Toggle ---
+    const themeToggleBtn = document.getElementById('themeToggle');
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            let currentTheme = document.documentElement.getAttribute('data-theme');
+            let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateRecaptchaTheme(newTheme);
+        });
+    }
+
 
     // --- Navbar Scroll Effect ---
     const navbar = document.getElementById('navbar');
@@ -65,25 +126,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Placeholder Discord Webhook URL (Replace with actual webhook)
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1475391815447216365/rFHd6xJs84ZUcWTlneNOfAWIj1rG6dTGIvOhGdjsC_3UIoNbyK6ZigDSBbPCEkdNki_-";
 
-    // Captcha Logic
-    let captchaExpectedResult = 0;
-    const captchaQuestion = document.getElementById('captchaQuestion');
-    const captchaInput = document.getElementById('captchaInput');
-
-    function generateCaptcha() {
-        const num1 = Math.floor(Math.random() * 10) + 1;
-        const num2 = Math.floor(Math.random() * 10) + 1;
-        captchaExpectedResult = num1 + num2;
-        if (captchaQuestion) {
-            captchaQuestion.textContent = `¿${num1} + ${num2}? =`;
+    // --- Google reCAPTCHA Logic ---
+    function checkRecaptcha() {
+        const response = grecaptcha.getResponse();
+        if (response.length === 0) {
+            return false;
         }
-        if (captchaInput) {
-            captchaInput.value = '';
-        }
+        return true;
     }
-
-    // Initialize Captcha
-    generateCaptcha();
 
     contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -96,13 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const deliveryDate = document.getElementById('deliveryDate').value;
         const quantity = document.getElementById('quantity').value;
         const message = document.getElementById('message').value;
-        const userCaptcha = parseInt(captchaInput.value, 10);
 
-        if (userCaptcha !== captchaExpectedResult) {
-            formStatus.textContent = 'Verificación humana incorrecta. Verifica la suma matemática.';
+        if (!checkRecaptcha()) {
+            formStatus.textContent = 'Por favor, completa el reCAPTCHA para demostrar que no eres un robot.';
             formStatus.className = 'form-status error';
-            generateCaptcha(); // Generate a new one
-            return; // Stop submission
+            return;
         }
 
         // Change button state
@@ -114,11 +162,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             // Prepare the payload for Discord
-            const contactTypeStr = contactPref === 'whatsapp' ? '📱 WhatsApp / Teléfono' : '✉️ Correo Electrónico';
-            const orderTypeStr = orderType === 'personal' ? '👤 Pedido Personal' : '🎉 Evento / Fiesta';
+            // Prepare the payload for Discord - Emojis removed for professional look
+            const contactTypeStr = contactPref === 'whatsapp' ? '[WHATSAPP/TEL]' : '[EMAIL]';
+            const orderTypeStr = orderType === 'personal' ? '[PEDIDO PERSONAL]' : '[EVENTO/FIESTA]';
 
             const payload = {
-                content: `**Nuevo Mensaje/Pedido de Maison Empanada** 🥟\n\n**Nombre:** ${name}\n**Contacto:** ${email}\n**Preferencia de Contacto:** ${contactTypeStr}\n**Tipo de Pedido:** ${orderTypeStr}\n**Fecha de Entrega:** ${deliveryDate || 'No especificada'}\n**Cantidad:** ${quantity || 'No especificada'}\n**Variedad / Sabor:** ${flavor}\n**Mensaje:**\n${message}`
+                content: `**[MAISON EMPANADA] Nuevo Mensaje/Pedido**\n\n**Nombre:** ${name}\n**Contacto:** ${email}\n**Preferencia:** ${contactTypeStr}\n**Tipo:** ${orderTypeStr}\n**Fecha:** ${deliveryDate || 'No especificada'}\n**Cantidad:** ${quantity || 'No especificada'}\n**Variedad:** ${flavor}\n**Mensaje:**\n${message}`
             };
 
             // Attempt to send to discord webhook if it's not the placeholder
@@ -155,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
             formStatus.textContent = '¡Mensaje enviado con éxito! Te contactaremos pronto.';
             formStatus.classList.add('success');
             contactForm.reset();
-            generateCaptcha(); // Reset captcha for the next one
+            grecaptcha.reset(); // Reset reCAPTCHA after success
 
             // Clear success message after 5 seconds
             setTimeout(() => {
@@ -234,7 +283,56 @@ document.addEventListener('DOMContentLoaded', () => {
         item.addEventListener('mouseleave', () => {
             // Reset transforms when mouse leaves, allowing CSS base hover to take over
             item.style.transform = '';
+            const glare = item.querySelector('.glare');
+            if (glare) glare.style.opacity = '0';
+        });
+
+        // Glare follow mouse
+        item.addEventListener('pointermove', (e) => {
+            const rect = item.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const glare = item.querySelector('.glare');
+            if (glare) {
+                glare.style.setProperty('--mouse-x', `${x}px`);
+                glare.style.setProperty('--mouse-y', `${y}px`);
+            }
         });
     });
+
+    // --- Custom Cursor Logic ---
+    const cursorDot = document.querySelector('.cursor-dot');
+    const cursorOutline = document.querySelector('.cursor-outline');
+
+    if (cursorDot && cursorOutline && window.matchMedia("(pointer: fine)").matches) {
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+
+            // Adding a slight delay to the outline using animate for a smoother feel
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+        });
+
+        // Hover effects for the cursor
+        const hoverTags = document.querySelectorAll('a, button, select, input, textarea, .menu-item');
+        hoverTags.forEach(tag => {
+            tag.addEventListener('mouseenter', () => {
+                cursorOutline.style.width = '60px';
+                cursorOutline.style.height = '60px';
+                cursorOutline.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            });
+            tag.addEventListener('mouseleave', () => {
+                cursorOutline.style.width = '40px';
+                cursorOutline.style.height = '40px';
+                cursorOutline.style.backgroundColor = 'transparent';
+            });
+        });
+    }
 
 });
