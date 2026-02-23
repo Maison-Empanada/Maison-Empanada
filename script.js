@@ -161,15 +161,173 @@ document.addEventListener('DOMContentLoaded', () => {
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1475391815447216365/rFHd6xJs84ZUcWTlneNOfAWIj1rG6dTGIvOhGdjsC_3UIoNbyK6ZigDSBbPCEkdNki_-";
 
     // --- Email De-obfuscation ---
-    const secureEmail = document.getElementById('secure-email');
-    if (secureEmail) {
-        const user = secureEmail.getAttribute('data-user');
-        const domain = secureEmail.getAttribute('data-domain');
+    const obfuscatedEmails = document.querySelectorAll('.obfuscated-email');
+    obfuscatedEmails.forEach(el => {
+        const user = el.getAttribute('data-user');
+        const domain = el.getAttribute('data-domain');
         if (user && domain) {
             const email = `${user}@${domain}`;
-            secureEmail.href = `mailto:${email}`;
-            secureEmail.textContent = email;
+            el.href = `mailto:${email}`;
+            el.textContent = email;
         }
+    });
+
+    // --- Detailed Ordering System Logic ---
+    const isOrderPage = document.body.classList.contains('order-page');
+    const productGrid = document.getElementById('product-grid');
+    const cartItemsList = document.getElementById('cart-items');
+    const totalQtyDisplay = document.getElementById('total-qty');
+    const checkoutBtn = document.getElementById('proceed-to-checkout');
+    const checkoutSection = document.getElementById('checkout-section');
+    const orderForm = document.getElementById('orderForm');
+
+    const products = [
+        { id: 'emp-pollo', name: 'Pollo', category: 'empanadas', price: 'Q10.00', desc: 'Clásica y jugosa.', img: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=400' },
+        { id: 'emp-res', name: 'Res', category: 'empanadas', price: 'Q10.00', desc: 'Res premium sazonada.', img: 'https://images.unsplash.com/photo-1517244683847-7456b63c5969?q=80&w=400' },
+        { id: 'emp-jamon', name: 'Jamón y Queso', category: 'empanadas', price: 'Q10.00', desc: 'Favorita de todos.', img: 'https://images.unsplash.com/photo-1541592391523-5ae8c2c88d10?q=80&w=400' },
+        { id: 'emp-dulce', name: 'Dulce (Fruta)', category: 'empanadas', price: 'Q10.00', desc: 'Toque dulce especial.', img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=400' },
+        { id: 'tren-jq', name: 'Trensa J&Q', category: 'trensas', price: 'Q35.00', desc: 'Grande para compartir.', img: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=400' },
+        { id: 'tren-pollo', name: 'Trensa Pollo', category: 'trensas', price: 'Q40.00', desc: 'Relleno generoso.', img: 'https://images.unsplash.com/photo-1517244683847-7456b63c5969?q=80&w=400' },
+        { id: 'pack-party', name: 'Pack Fiesta (12)', category: 'especiales', price: 'Q100.00', desc: 'Surtido variado.', img: 'https://images.unsplash.com/photo-1541592391523-5ae8c2c88d10?q=80&w=400' }
+    ];
+
+    let cart = {}; // { id: quantity }
+
+    if (isOrderPage && productGrid) {
+        renderProducts('empanadas');
+
+        // Tab Switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderProducts(btn.dataset.tab);
+            });
+        });
+
+        checkoutBtn.addEventListener('click', () => {
+            checkoutSection.classList.remove('hide');
+            checkoutSection.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // --- Handle Direct Order from HP ---
+        checkUrlParameters();
+    }
+
+    function checkUrlParameters() {
+        const params = new URLSearchParams(window.location.search);
+        const itemId = params.get('item');
+
+        if (itemId) {
+            const product = products.find(p => p.id === itemId);
+            if (product) {
+                // Add to cart
+                cart[itemId] = 1;
+
+                // Switch to correct tab
+                const tabBtn = document.querySelector(`.tab-btn[data-tab="${product.category}"]`);
+                if (tabBtn) {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    tabBtn.classList.add('active');
+                    renderProducts(product.category);
+                }
+
+                renderSummary();
+
+                // Scroll to products
+                setTimeout(() => {
+                    const gridElement = document.getElementById('product-grid');
+                    if (gridElement) {
+                        gridElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 100);
+            }
+        }
+    }
+
+    function renderProducts(category) {
+        if (!productGrid) return;
+        productGrid.innerHTML = '';
+        const filtered = products.filter(p => p.category === category);
+
+        filtered.forEach(p => {
+            const qty = cart[p.id] || 0;
+            const card = document.createElement('div');
+            card.className = 'product-order-card';
+            card.innerHTML = `
+                <div class="product-img-box">
+                    <img src="${p.img}" alt="${p.name}">
+                </div>
+                <div class="product-order-info">
+                    <h4>${p.name}</h4>
+                    <p>${p.desc}</p>
+                    <div class="qty-controls">
+                        <button class="qty-btn minus" data-id="${p.id}"><i data-lucide="minus"></i></button>
+                        <span class="qty-val" id="qty-${p.id}">${qty}</span>
+                        <button class="qty-btn plus" data-id="${p.id}"><i data-lucide="plus"></i></button>
+                    </div>
+                </div>
+            `;
+            productGrid.appendChild(card);
+        });
+        if (window.lucide) lucide.createIcons();
+        setupQtyListeners();
+    }
+
+    function setupQtyListeners() {
+        document.querySelectorAll('.qty-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.dataset.id;
+                const isPlus = btn.classList.contains('plus');
+                updateCart(id, isPlus);
+            });
+        });
+    }
+
+    function updateCart(id, increment) {
+        if (increment) {
+            cart[id] = (cart[id] || 0) + 1;
+        } else if (cart[id] > 0) {
+            cart[id]--;
+            if (cart[id] === 0) delete cart[id];
+        }
+
+        // Update card value
+        const valEl = document.getElementById(`qty-${id}`);
+        if (valEl) valEl.textContent = cart[id] || 0;
+
+        renderSummary();
+    }
+
+    function renderSummary() {
+        if (!cartItemsList) return;
+        cartItemsList.innerHTML = '';
+        let total = 0;
+
+        const cartKeys = Object.keys(cart);
+        if (cartKeys.length === 0) {
+            cartItemsList.innerHTML = '<p class="empty-cart">Aún no has seleccionado nada.</p>';
+            totalQtyDisplay.textContent = '0';
+            checkoutBtn.disabled = true;
+            return;
+        }
+
+        cartKeys.forEach(id => {
+            const p = products.find(prod => prod.id === id);
+            const qty = cart[id];
+            total += qty;
+
+            const row = document.createElement('div');
+            row.className = 'cart-item-row';
+            row.innerHTML = `
+                <span class="item-name">${p.name}</span>
+                <span class="item-qty">x${qty}</span>
+            `;
+            cartItemsList.appendChild(row);
+        });
+
+        totalQtyDisplay.textContent = total;
+        checkoutBtn.disabled = total === 0;
     }
 
     // --- Google reCAPTCHA Logic ---
@@ -183,194 +341,202 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     }
 
-    contactForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    // --- Consolidated Form Submission (Home or Order Page) ---
+    const targetForm = orderForm || contactForm;
+    if (targetForm) {
+        targetForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        // 1. Honeypot check
-        const nickname = document.getElementById('nickname').value;
-        if (nickname) {
-            console.warn('Spam bot detected via honeypot.');
-            formStatus.textContent = '¡Mensaje enviado con éxito!'; // Fake success to fool bots
-            formStatus.className = 'form-status success';
-            contactForm.reset();
-            return;
-        }
+            // 1. Honeypot check
+            const nickname = document.getElementById('nickname').value;
+            if (nickname) {
+                console.warn('Spam bot detected via honeypot.');
+                formStatus.textContent = '¡Mensaje enviado con éxito!'; // Fake success
+                formStatus.className = 'form-status success';
+                targetForm.reset();
+                return;
+            }
 
-        // 2. Client-side Rate Limiting (5 minutes)
-        const lastSubmission = localStorage.getItem('last_submission');
-        const now = Date.now();
-        if (lastSubmission && (now - lastSubmission < 5 * 60 * 1000)) {
-            const timeLeft = Math.ceil((5 * 60 * 1000 - (now - lastSubmission)) / 60000);
-            formStatus.textContent = `Has enviado un mensaje recientemente. Por favor, espera ${timeLeft} minutos para enviar otro.`;
-            formStatus.className = 'form-status error';
-            return;
-        }
+            // 2. Client-side Rate Limiting (5 minutes)
+            const lastSubmission = localStorage.getItem('last_submission');
+            const now = Date.now();
+            if (!isDebugMode && lastSubmission && (now - lastSubmission < 5 * 60 * 1000)) {
+                const timeLeft = Math.ceil((5 * 60 * 1000 - (now - lastSubmission)) / 60000);
+                formStatus.textContent = `Has enviado un mensaje recientemente. Por favor, espera ${timeLeft} minutos para enviar otro.`;
+                formStatus.className = 'form-status error';
+                return;
+            }
 
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const contactPref = document.getElementById('contactPref').value;
-        const orderType = document.getElementById('orderType').value;
-        const flavor = document.getElementById('flavor').value;
-        const deliveryDate = document.getElementById('deliveryDate').value;
-        const quantity = document.getElementById('quantity').value;
-        const message = document.getElementById('message').value;
+            // reCAPTCHA check
+            if (!checkRecaptcha()) {
+                formStatus.textContent = 'Por favor, completa el captcha correctamente.';
+                formStatus.className = 'form-status error';
+                return;
+            }
 
-        // 3. Strict Validation
-        const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{2,50}$/;
-        if (!nameRegex.test(name)) {
-            formStatus.textContent = 'Por favor, ingresa un nombre válido (solo letras, min 2 caracteres).';
-            formStatus.className = 'form-status error';
-            return;
-        }
+            // Get form values (flexible mapping)
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
 
-        if (message.trim().length < 10) {
-            formStatus.textContent = 'Por favor, escribe un mensaje un poco más detallado (mínimo 10 caracteres).';
-            formStatus.className = 'form-status error';
-            return;
-        }
+            // Validation
+            if (!name.match(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{2,50}$/)) {
+                formStatus.textContent = 'Por favor, ingresa un nombre válido (letras únicamente, 2-50 caracteres).';
+                formStatus.className = 'form-status error';
+                return;
+            }
 
-        if (!checkRecaptcha()) {
-            formStatus.textContent = 'Por favor, completa el reCAPTCHA para demostrar que no eres un robot.';
-            formStatus.className = 'form-status error';
-            return;
-        }
+            if (message.length > 0 && message.length < 10) {
+                formStatus.textContent = 'Por favor, escribe un mensaje de al menos 10 caracteres.';
+                formStatus.className = 'form-status error';
+                return;
+            }
 
-        // 4. Show Review Modal instead of direct submission
-        showReviewModal({
-            name,
-            email,
-            contactPref,
-            orderType,
-            flavor,
-            deliveryDate,
-            quantity,
-            message
+            // Construct detailed order text if on order page
+            let orderSummaryText = '';
+            if (isOrderPage) {
+                const items = Object.entries(cart).map(([id, qty]) => {
+                    const p = products.find(prod => prod.id === id);
+                    return `${p.name} x${qty}`;
+                });
+                orderSummaryText = items.join(', ');
+            }
+
+            // Capture context-specific fields
+            const deliveryDate = document.getElementById('deliveryDate')?.value || 'N/A';
+            const orderType = document.getElementById('orderType')?.value || 'N/A';
+            const flavor = document.getElementById('flavor')?.value || 'N/A';
+            const quantity = document.getElementById('quantity')?.value || 'N/A';
+
+            showReviewModal({
+                name,
+                email,
+                message,
+                orderSummary: orderSummaryText,
+                deliveryDate,
+                orderType,
+                flavor,
+                quantity
+            });
         });
-    });
+    }
 
-    // --- Modal Logic ---
+    // --- Review Modal Logic ---
     const reviewModal = document.getElementById('reviewModal');
     const modalSummary = document.getElementById('modalSummary');
     const cancelSubmit = document.getElementById('cancelSubmit');
     const confirmSubmit = document.getElementById('confirmSubmit');
 
     function showReviewModal(data) {
-        // Inject data into modal
-        const labels = {
-            name: 'Nombre',
-            email: 'Contacto',
-            contactPref: 'Preferencia',
-            orderType: 'Tipo de Pedido',
-            deliveryDate: 'Fecha',
-            quantity: 'Cantidad',
-            flavor: 'Variedad',
-            message: 'Mensaje'
-        };
+        if (!reviewModal) return;
 
-        const values = {
-            contactPref: data.contactPref === 'whatsapp' ? 'WhatsApp' : 'Email',
-            orderType: data.orderType === 'personal' ? 'Personal' : 'Evento/Fiesta'
-        };
+        let summaryHtml = `
+            <div class="summary-item"><strong>Nombre:</strong> <span>${data.name}</span></div>
+            <div class="summary-item"><strong>Contacto:</strong> <span>${data.email}</span></div>
+        `;
 
-        let summaryHtml = '';
-        for (const [key, label] of Object.entries(labels)) {
-            let val = data[key] || 'No especificado';
-            if (values[key]) val = values[key];
-
-            // Truncate long messages in summary
-            if (key === 'message' && val.length > 50) val = val.substring(0, 50) + '...';
-
-            summaryHtml += `
-                <div class="summary-item">
-                    <span class="summary-label">${label}:</span>
-                    <span class="summary-value">${val}</span>
-                </div>
-            `;
+        // Detailed order vs general contact
+        if (data.orderSummary) {
+            summaryHtml += `<div class="summary-item"><strong>Detalle:</strong> <span>${data.orderSummary}</span></div>`;
+        } else if (data.flavor && data.flavor !== 'N/A') {
+            summaryHtml += `<div class="summary-item"><strong>Variedad:</strong> <span>${data.flavor} (x${data.quantity})</span></div>`;
         }
+
+        summaryHtml += `
+            <div class="summary-item"><strong>Fecha:</strong> <span>${data.deliveryDate}</span></div>
+            <div class="summary-item"><strong>Instrucciones:</strong> <span>${data.message || 'Sin instrucciones'}</span></div>
+        `;
+
         modalSummary.innerHTML = summaryHtml;
         reviewModal.classList.add('active');
 
-        // Refresh icons for the modal icon
         if (window.lucide) lucide.createIcons();
 
-        // Setup confirm click handler (one-time)
         confirmSubmit.onclick = async () => {
             reviewModal.classList.remove('active');
             await performRealSubmission(data);
         };
     }
 
-    cancelSubmit.addEventListener('click', () => {
-        reviewModal.classList.remove('active');
-    });
+    if (cancelSubmit) {
+        cancelSubmit.addEventListener('click', () => {
+            reviewModal.classList.remove('active');
+        });
+    }
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') reviewModal.classList.remove('active');
+        if (e.key === 'Escape' && reviewModal) reviewModal.classList.remove('active');
     });
 
     async function performRealSubmission(data) {
+        const currentSubmitBtn = document.getElementById('submitBtn');
+        const currentFormStatus = document.getElementById('formStatus');
+
         // Change button state
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<span>Enviando...</span>';
-        submitBtn.disabled = true;
-        formStatus.textContent = '';
-        formStatus.className = 'form-status';
+        const originalText = currentSubmitBtn.innerHTML;
+        currentSubmitBtn.innerHTML = '<span>Enviando...</span>';
+        currentSubmitBtn.disabled = true;
+        currentFormStatus.textContent = '';
+        currentFormStatus.className = 'form-status';
 
         try {
-            // Prepare the payload for Discord - Emojis removed for professional look
-            const contactTypeStr = data.contactPref === 'whatsapp' ? '[WHATSAPP/TEL]' : '[EMAIL]';
-            const orderTypeStr = data.orderType === 'personal' ? '[PEDIDO PERSONAL]' : '[EVENTO/FIESTA]';
-
+            const isOrder = !!data.orderSummary;
             const payload = {
-                content: `**[MAISON EMPANADA] Nuevo Mensaje/Pedido**\n\n**Nombre:** ${data.name}\n**Contacto:** ${data.email}\n**Preferencia:** ${contactTypeStr}\n**Tipo:** ${orderTypeStr}\n**Fecha:** ${data.deliveryDate || 'No especificada'}\n**Cantidad:** ${data.quantity || 'No especificada'}\n**Variedad:** ${data.flavor}\n**Mensaje:**\n${data.message}`
+                username: isOrder ? "Maison Order Bot" : "Maison Contact Bot",
+                embeds: [{
+                    title: isOrder ? "Nuevo Pedido Detallado" : "Nuevo Mensaje de Contacto",
+                    color: isOrder ? 15158332 : 2727311, // Orange vs Teal
+                    fields: [
+                        { name: "Cliente", value: data.name, inline: true },
+                        { name: "Contacto", value: data.email, inline: true },
+                        { name: "Fecha", value: data.deliveryDate, inline: true },
+                        { name: "Momento", value: data.orderType, inline: true },
+                        { name: isOrder ? "Detalle del Pedido" : "Variedad Interés", value: data.orderSummary || data.flavor || "N/A", inline: false },
+                        { name: "Mensaje/Instrucciones", value: data.message || "Sin mensaje adicional", inline: false }
+                    ],
+                    footer: { text: "Maison Empanadas | Powered by Antigravity" },
+                    timestamp: new Date().toISOString()
+                }]
             };
 
-            // Attempt to send to discord webhook if it's not the placeholder
-            if (DISCORD_WEBHOOK_URL.includes("PLACEHOLDER")) {
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                handleSuccess();
-            } else {
-                const response = await fetch(DISCORD_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+            const response = await fetch(DISCORD_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
 
-                if (response.ok) {
-                    handleSuccess();
-                    // Save submission timestamp
-                    localStorage.setItem('last_submission', Date.now());
-                } else {
-                    throw new Error('Network response was not ok.');
+            if (response.ok) {
+                currentFormStatus.textContent = '¡Tu mensaje ha sido enviado con éxito! Nos contactaremos pronto.';
+                currentFormStatus.className = 'form-status success';
+                localStorage.setItem('last_submission', Date.now());
+
+                if (isOrder) {
+                    showToast('Pedido enviado', 'Tu pedido se ha procesado con éxito.');
                 }
-            }
 
+                if (orderForm) orderForm.reset();
+                if (contactForm) contactForm.reset();
+
+                // Clear order page state
+                cart = {};
+                renderSummary();
+                if (checkoutSection) checkoutSection.classList.add('hide');
+
+                if (typeof grecaptcha !== 'undefined' && currentRecaptchaWidgetId !== null) {
+                    grecaptcha.reset(currentRecaptchaWidgetId);
+                }
+            } else {
+                throw new Error('Fallback failed');
+            }
         } catch (error) {
-            console.error('Error submitting form:', error);
-            formStatus.textContent = 'Hubo un error al enviar el mensaje. Intenta de nuevo.';
-            formStatus.classList.add('error');
+            console.error('Submission error:', error);
+            currentFormStatus.textContent = 'Hubo un error al enviar. Por favor intenta de nuevo.';
+            currentFormStatus.className = 'form-status error';
         } finally {
-            // Restore button state
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        }
-
-        function handleSuccess() {
-            formStatus.textContent = '¡Mensaje enviado con éxito! Te contactaremos pronto.';
-            formStatus.classList.add('success');
-            contactForm.reset();
-            if (currentRecaptchaWidgetId !== null) {
-                grecaptcha.reset(currentRecaptchaWidgetId); // Reset specific reCAPTCHA widget after success
-            }
-
-            // Clear success message after 5 seconds
-            setTimeout(() => {
-                formStatus.textContent = '';
-                formStatus.classList.remove('success');
-            }, 5000);
+            currentSubmitBtn.innerHTML = originalText;
+            currentSubmitBtn.disabled = false;
         }
     }
-
     // --- Staggered Scroll Animation ---
     // Add fade-in blocks and stagger classes to grid items
     const fadeElements = document.querySelectorAll('section');
@@ -422,40 +588,6 @@ document.addEventListener('DOMContentLoaded', () => {
         blob.style.setProperty('--parallax-x', `${xPos}px`);
     });
 
-    // --- Advanced 3D Tilt Effect on Menu Items ---
-    menuGridItems.forEach(item => {
-        item.addEventListener('mousemove', (e) => {
-            const rect = item.getBoundingClientRect();
-            // Calculate X and Y coordinates relative to the card's center
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-
-            // Limit the intensity of the rotation (higher division = less angle)
-            const rotateY = x / 15;
-            const rotateX = -(y / 15);
-
-            item.style.transform = `translateY(-15px) scale(1.02) perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-        });
-
-        item.addEventListener('mouseleave', () => {
-            // Reset transforms when mouse leaves, allowing CSS base hover to take over
-            item.style.transform = '';
-            const glare = item.querySelector('.glare');
-            if (glare) glare.style.opacity = '0';
-        });
-
-        // Glare follow mouse
-        item.addEventListener('pointermove', (e) => {
-            const rect = item.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const glare = item.querySelector('.glare');
-            if (glare) {
-                glare.style.setProperty('--mouse-x', `${x}px`);
-                glare.style.setProperty('--mouse-y', `${y}px`);
-            }
-        });
-    });
 
     // --- Custom Cursor Logic ---
     const cursorDot = document.querySelector('.cursor-dot');
@@ -491,5 +623,42 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // --- Toast Notification Logic ---
+    function initToast() {
+        if (!document.querySelector('.toast-container')) {
+            const container = document.createElement('div');
+            container.className = 'toast-container';
+            document.body.appendChild(container);
+        }
+    }
+
+    window.showToast = function (title, message) {
+        initToast();
+        const container = document.querySelector('.toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `
+            <i data-lucide="check-circle" class="toast-icon"></i>
+            <div class="toast-content">
+                <span class="toast-title">${title}</span>
+                <span class="toast-msg">${message}</span>
+            </div>
+            <div class="toast-progress"></div>
+        `;
+        container.appendChild(toast);
+        if (window.lucide) lucide.createIcons();
+
+        // Trigger animation
+        setTimeout(() => toast.classList.add('active'), 10);
+
+        // Auto removal
+        setTimeout(() => {
+            toast.classList.remove('active');
+            setTimeout(() => toast.remove(), 600);
+        }, 4000);
+    };
+
+    initToast();
 
 });
