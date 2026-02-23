@@ -17,6 +17,7 @@ window.onloadCallback = function () {
 
 // Global variable to store active reCAPTCHA widget ID
 let currentRecaptchaWidgetId = null;
+let isDebugMode = false;
 
 // Helper to update reCAPTCHA theme - Global scope for API access
 function updateRecaptchaTheme(theme) {
@@ -48,6 +49,36 @@ function updateRecaptchaTheme(theme) {
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize Lucide Icons
     if (window.lucide) lucide.createIcons();
+
+    // --- Debug Mode Initialization ---
+    const debugBtn = document.getElementById('debugBtn');
+    const isProduction = window.location.hostname === 'www.maisonempanadas.com' || window.location.hostname === 'maisonempanadas.com';
+
+    if (debugBtn && !isProduction) {
+        debugBtn.style.display = 'flex';
+        debugBtn.addEventListener('click', () => {
+            const password = prompt('Introduce la contraseña de acceso (Debug Mode):');
+            if (password === '9122') {
+                isDebugMode = !isDebugMode;
+                if (isDebugMode) {
+                    debugBtn.classList.add('active');
+                    alert('MODO DEBUG ACTIVADO: reCAPTCHA desactivado.');
+                    // Visual indicator in captcha container
+                    const captchaContainer = document.querySelector('.captcha-container');
+                    if (captchaContainer) captchaContainer.style.border = '2px dashed var(--accent-color)';
+                } else {
+                    debugBtn.classList.remove('active');
+                    alert('Modo Debug desactivado.');
+                    const captchaContainer = document.querySelector('.captcha-container');
+                    if (captchaContainer) captchaContainer.style.border = 'none';
+                }
+            } else {
+                alert('Contraseña incorrecta.');
+            }
+        });
+    } else if (debugBtn) {
+        debugBtn.remove(); // Safety: Remove from DOM entirely if in production
+    }
 
     // --- Theme Toggle ---
     const themeToggleBtn = document.getElementById('themeToggle');
@@ -129,8 +160,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Placeholder Discord Webhook URL (Replace with actual webhook)
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1475391815447216365/rFHd6xJs84ZUcWTlneNOfAWIj1rG6dTGIvOhGdjsC_3UIoNbyK6ZigDSBbPCEkdNki_-";
 
+    // --- Email De-obfuscation ---
+    const secureEmail = document.getElementById('secure-email');
+    if (secureEmail) {
+        const user = secureEmail.getAttribute('data-user');
+        const domain = secureEmail.getAttribute('data-domain');
+        if (user && domain) {
+            const email = `${user}@${domain}`;
+            secureEmail.href = `mailto:${email}`;
+            secureEmail.textContent = email;
+        }
+    }
+
     // --- Google reCAPTCHA Logic ---
     function checkRecaptcha() {
+        if (isDebugMode) return true; // Bypass for testing
         if (currentRecaptchaWidgetId === null) return false;
         const response = grecaptcha.getResponse(currentRecaptchaWidgetId);
         if (response.length === 0) {
@@ -142,6 +186,26 @@ document.addEventListener('DOMContentLoaded', () => {
     contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        // 1. Honeypot check
+        const nickname = document.getElementById('nickname').value;
+        if (nickname) {
+            console.warn('Spam bot detected via honeypot.');
+            formStatus.textContent = '¡Mensaje enviado con éxito!'; // Fake success to fool bots
+            formStatus.className = 'form-status success';
+            contactForm.reset();
+            return;
+        }
+
+        // 2. Client-side Rate Limiting (5 minutes)
+        const lastSubmission = localStorage.getItem('last_submission');
+        const now = Date.now();
+        if (lastSubmission && (now - lastSubmission < 5 * 60 * 1000)) {
+            const timeLeft = Math.ceil((5 * 60 * 1000 - (now - lastSubmission)) / 60000);
+            formStatus.textContent = `Has enviado un mensaje recientemente. Por favor, espera ${timeLeft} minutos para enviar otro.`;
+            formStatus.className = 'form-status error';
+            return;
+        }
+
         const name = document.getElementById('name').value;
         const email = document.getElementById('email').value;
         const contactPref = document.getElementById('contactPref').value;
@@ -151,12 +215,100 @@ document.addEventListener('DOMContentLoaded', () => {
         const quantity = document.getElementById('quantity').value;
         const message = document.getElementById('message').value;
 
+        // 3. Strict Validation
+        const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{2,50}$/;
+        if (!nameRegex.test(name)) {
+            formStatus.textContent = 'Por favor, ingresa un nombre válido (solo letras, min 2 caracteres).';
+            formStatus.className = 'form-status error';
+            return;
+        }
+
+        if (message.trim().length < 10) {
+            formStatus.textContent = 'Por favor, escribe un mensaje un poco más detallado (mínimo 10 caracteres).';
+            formStatus.className = 'form-status error';
+            return;
+        }
+
         if (!checkRecaptcha()) {
             formStatus.textContent = 'Por favor, completa el reCAPTCHA para demostrar que no eres un robot.';
             formStatus.className = 'form-status error';
             return;
         }
 
+        // 4. Show Review Modal instead of direct submission
+        showReviewModal({
+            name,
+            email,
+            contactPref,
+            orderType,
+            flavor,
+            deliveryDate,
+            quantity,
+            message
+        });
+    });
+
+    // --- Modal Logic ---
+    const reviewModal = document.getElementById('reviewModal');
+    const modalSummary = document.getElementById('modalSummary');
+    const cancelSubmit = document.getElementById('cancelSubmit');
+    const confirmSubmit = document.getElementById('confirmSubmit');
+
+    function showReviewModal(data) {
+        // Inject data into modal
+        const labels = {
+            name: 'Nombre',
+            email: 'Contacto',
+            contactPref: 'Preferencia',
+            orderType: 'Tipo de Pedido',
+            deliveryDate: 'Fecha',
+            quantity: 'Cantidad',
+            flavor: 'Variedad',
+            message: 'Mensaje'
+        };
+
+        const values = {
+            contactPref: data.contactPref === 'whatsapp' ? 'WhatsApp' : 'Email',
+            orderType: data.orderType === 'personal' ? 'Personal' : 'Evento/Fiesta'
+        };
+
+        let summaryHtml = '';
+        for (const [key, label] of Object.entries(labels)) {
+            let val = data[key] || 'No especificado';
+            if (values[key]) val = values[key];
+
+            // Truncate long messages in summary
+            if (key === 'message' && val.length > 50) val = val.substring(0, 50) + '...';
+
+            summaryHtml += `
+                <div class="summary-item">
+                    <span class="summary-label">${label}:</span>
+                    <span class="summary-value">${val}</span>
+                </div>
+            `;
+        }
+        modalSummary.innerHTML = summaryHtml;
+        reviewModal.classList.add('active');
+
+        // Refresh icons for the modal icon
+        if (window.lucide) lucide.createIcons();
+
+        // Setup confirm click handler (one-time)
+        confirmSubmit.onclick = async () => {
+            reviewModal.classList.remove('active');
+            await performRealSubmission(data);
+        };
+    }
+
+    cancelSubmit.addEventListener('click', () => {
+        reviewModal.classList.remove('active');
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') reviewModal.classList.remove('active');
+    });
+
+    async function performRealSubmission(data) {
         // Change button state
         const originalText = submitBtn.innerHTML;
         submitBtn.innerHTML = '<span>Enviando...</span>';
@@ -165,19 +317,16 @@ document.addEventListener('DOMContentLoaded', () => {
         formStatus.className = 'form-status';
 
         try {
-            // Prepare the payload for Discord
             // Prepare the payload for Discord - Emojis removed for professional look
-            const contactTypeStr = contactPref === 'whatsapp' ? '[WHATSAPP/TEL]' : '[EMAIL]';
-            const orderTypeStr = orderType === 'personal' ? '[PEDIDO PERSONAL]' : '[EVENTO/FIESTA]';
+            const contactTypeStr = data.contactPref === 'whatsapp' ? '[WHATSAPP/TEL]' : '[EMAIL]';
+            const orderTypeStr = data.orderType === 'personal' ? '[PEDIDO PERSONAL]' : '[EVENTO/FIESTA]';
 
             const payload = {
-                content: `**[MAISON EMPANADA] Nuevo Mensaje/Pedido**\n\n**Nombre:** ${name}\n**Contacto:** ${email}\n**Preferencia:** ${contactTypeStr}\n**Tipo:** ${orderTypeStr}\n**Fecha:** ${deliveryDate || 'No especificada'}\n**Cantidad:** ${quantity || 'No especificada'}\n**Variedad:** ${flavor}\n**Mensaje:**\n${message}`
+                content: `**[MAISON EMPANADA] Nuevo Mensaje/Pedido**\n\n**Nombre:** ${data.name}\n**Contacto:** ${data.email}\n**Preferencia:** ${contactTypeStr}\n**Tipo:** ${orderTypeStr}\n**Fecha:** ${data.deliveryDate || 'No especificada'}\n**Cantidad:** ${data.quantity || 'No especificada'}\n**Variedad:** ${data.flavor}\n**Mensaje:**\n${data.message}`
             };
 
             // Attempt to send to discord webhook if it's not the placeholder
-            // For now, we simulate a successful request since it's a placeholder
             if (DISCORD_WEBHOOK_URL.includes("PLACEHOLDER")) {
-                // Simulate network delay
                 await new Promise(resolve => setTimeout(resolve, 1500));
                 handleSuccess();
             } else {
@@ -189,6 +338,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (response.ok) {
                     handleSuccess();
+                    // Save submission timestamp
+                    localStorage.setItem('last_submission', Date.now());
                 } else {
                     throw new Error('Network response was not ok.');
                 }
@@ -218,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 formStatus.classList.remove('success');
             }, 5000);
         }
-    });
+    }
 
     // --- Staggered Scroll Animation ---
     // Add fade-in blocks and stagger classes to grid items
