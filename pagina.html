@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maison Empanada</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="bg-pattern"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-placeholder">
+                    <span>ME</span>
+                </div>
+                <h2>Maison Empanada</h2>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Inicio</a></li>
+                <li><a href="#about">Nosotros</a></li>
+                <li><a href="#menu">Comida</a></li>
+                <li><a href="#contact">Contacto</a></li>
+            </ul>
+            <div class="hamburger">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-stagger">El Arte de la <span class="highlight">Empanada</span></h1>
+            <p class="slogan hero-stagger">"En nuestra empresa no vendemos... Entregamos antojos peligrosamente
+                repetibles."</p>
+            <a href="#menu" class="cta-button hero-stagger">Ver Menú</a>
+        </div>
+        <div class="hero-visual">
+            <div class="blob"></div>
+            <div class="hero-image-card">
+                <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=1000&auto=format&fit=crop"
+                    alt="Empanadas Artesanales" class="hero-photo">
+                <div class="hero-badge">Recién Horneadas</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section id="about" class="about">
+        <div class="section-container">
+            <div class="about-grid">
+                <div class="about-text">
+                    <h2>Nuestra Pasión</h2>
+                    <p>Somos una empresa apasionada por las empanadas. Con ingredientes seleccionados y recetas
+                        perfeccionadas, ofrecemos opciones de <strong>pollo, jamón, dulce, res</strong>, y más.</p>
+                    <p>Entendemos que cada antojo es único, por lo que <em>cada cliente puede personalizar su
+                            pedido</em> a su gusto exacto.</p>
+
+                    <div class="company-info">
+                        <h3>Información de la Empresa</h3>
+                        <ul>
+                            <li><strong>Nombre:</strong> Maison Empanada</li>
+                            <li><strong>WhatsApp:</strong> <a href="https://wa.me/50257134072" target="_blank">+502 5713
+                                    4072</a> <span class="info-note">(pedidos con 3 días de anticipación)</span></li>
+                            <li><strong>Email:</strong> <a
+                                    href="mailto:maisonempanada@gmail.com">maisonempanada@gmail.com</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <div class="decorative-box"></div>
+                    <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=800&auto=format&fit=crop"
+                        alt="Empanadas Preparación" class="placeholder-img" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Food Section -->
+    <section id="menu" class="menu">
+        <div class="section-container">
+            <h2 class="section-title">Nuestro Menú</h2>
+            <p class="section-subtitle">Opciones clásicas y trenzas irresistibles, recién horneadas.</p>
+
+            <div class="menu-filters">
+                <button class="filter-btn active" data-filter="all">Todo</button>
+                <button class="filter-btn" data-filter="empanadas">Empanadas</button>
+                <button class="filter-btn" data-filter="trensas">Trensas</button>
+            </div>
+
+            <div class="menu-grid">
+                <!-- Empanadas -->
+                <div class="menu-item" data-category="empanadas">
+                    <div class="item-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?q=80&w=600&auto=format&fit=crop"
+                            alt="Empanadas de pollo" class="placeholder-img">
+                    </div>
+                    <div class="item-content">
+                        <h3>Empanadas de Pollo</h3>
+                        <p>Clásicas y jugosas con nuestro sazón especial.</p>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="empanadas">
+                    <div class="item-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1517244683847-7456b63c5969?q=80&w=600&auto=format&fit=crop"
+                            alt="Empanadas dulces" class="placeholder-img">
+                    </div>
+                    <div class="item-content">
+                        <h3>Empanadas Dulces</h3>
+                        <p>El toque dulce perfecto para cualquier momento.</p>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="empanadas">
+                    <div class="item-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=600&auto=format&fit=crop"
+                            alt="Empanadas saladas" class="placeholder-img">
+                    </div>
+                    <div class="item-content">
+                        <h3>Empanadas Saladas</h3>
+                        <p>Variedad de rellenos salados para todo paladar.</p>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="empanadas">
+                    <div class="item-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1582169505937-b9992bd01af9?q=80&w=600&auto=format&fit=crop"
+                            alt="Empanadas personalizadas" class="placeholder-img">
+                    </div>
+                    <div class="item-content">
+                        <h3>Empanadas Personalizadas</h3>
+                        <p>Elige tus ingredientes favoritos.</p>
+                    </div>
+                </div>
+
+                <!-- Trensas -->
+                <div class="menu-item" data-category="trensas">
+                    <div class="item-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=600&auto=format&fit=crop"
+                            alt="Trensas de pollo" class="placeholder-img">
+                    </div>
+                    <div class="item-content">
+                        <h3>Trensas de Pollo</h3>
+                        <p>Masa trenzada rellena de un delicioso guiso de pollo.</p>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="trensas">
+                    <div class="item-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1550508139-b9c1dceaf102?q=80&w=600&auto=format&fit=crop"
+                            alt="Trensas de jamón y queso" class="placeholder-img">
+                    </div>
+                    <div class="item-content">
+                        <h3>Trensas de Jamón y Queso</h3>
+                        <p>La combinación perfecta en cada bocado.</p>
+                    </div>
+                </div>
+
+                <div class="menu-item" data-category="trensas">
+                    <div class="item-image-wrapper">
+                        <img src="https://images.unsplash.com/photo-1619420674819-272e542cc089?q=80&w=600&auto=format&fit=crop"
+                            alt="Trensas personalizadas" class="placeholder-img">
+                    </div>
+                    <div class="item-content">
+                        <h3>Trensas Personalizadas</h3>
+                        <p>Crea tu trensa ideal con los ingredientes que prefieras.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="section-container">
+            <div class="contact-card">
+                <div class="contact-info-panel">
+                    <h2>Haz tu Pedido</h2>
+                    <p>Escríbenos para consultas o pedidos (recuerda que los pedidos requieren 3 días de anticipación).
+                    </p>
+                    <div class="contact-details">
+                        <div class="detail-item">
+                            <span class="icon">📍</span>
+                            <p>Maison Empanada</p>
+                        </div>
+                        <div class="detail-item">
+                            <span class="icon">📱</span>
+                            <p>+502 5713 4072</p>
+                        </div>
+                        <div class="detail-item">
+                            <span class="icon">✉️</span>
+                            <p>maisonempanada@gmail.com</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form-panel">
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Nombre</label>
+                            <input type="text" id="name" name="name" required placeholder="Tu nombre">
+                        </div>
+                        <div class="form-group" id="emailGroup">
+                            <label for="email">Correo Electrónico / Teléfono</label>
+                            <input type="text" id="email" name="email" required
+                                placeholder="tu@correo.com o tu número de WhatsApp">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactPref">Preferencia de Contacto</label>
+                                <select id="contactPref" name="contactPref" required>
+                                    <option value="whatsapp">WhatsApp / Teléfono</option>
+                                    <option value="email">Correo Electrónico</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="orderType">Tipo de Pedido</label>
+                                <select id="orderType" name="orderType" required>
+                                    <option value="personal">Pedido Personal (Sin anticipación)</option>
+                                    <option value="evento">Evento/Fiesta (Gran cantidad)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="deliveryDate">Fecha Solicitada</label>
+                                <input type="date" id="deliveryDate" name="deliveryDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="quantity">Cantidad Estimada</label>
+                                <input type="number" id="quantity" name="quantity" min="1" placeholder="Ej: 20">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="flavor">Sabor Favorito / Preferencia</label>
+                            <select id="flavor" name="flavor">
+                                <option value="variado">Surtido Variado</option>
+                                <option value="pollo">Pollo</option>
+                                <option value="res">Res</option>
+                                <option value="jamon_queso">Jamón y Queso</option>
+                                <option value="dulce">Dulces</option>
+                                <option value="personalizado">Personalizado (Describir abajo)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Mensaje Adicional</label>
+                            <textarea id="message" name="message" rows="3" required
+                                placeholder="Detalles de tu consulta..."></textarea>
+                        </div>
+
+                        <!-- Simple JS CAPTCHA -->
+                        <div class="form-group captcha-container"
+                            style="background: rgba(233, 196, 106, 0.1); padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; border: 1px dashed var(--secondary-color);">
+                            <div style="flex: 1;">
+                                <label for="captchaInput" style="margin-bottom: 0; font-size: 0.9rem;">Verificación
+                                    humana:</label>
+                                <span id="captchaQuestion"
+                                    style="font-weight: 800; font-size: 1.2rem; color: var(--primary-dark);">¿? + ¿?
+                                    =</span>
+                            </div>
+                            <input type="number" id="captchaInput" required placeholder="Respuesta"
+                                style="width: 100px; padding: 0.8rem; margin: 0; text-align: center;">
+                        </div>
+
+                        <button type="submit" class="submit-button" id="submitBtn">
+                            <span>Enviar Mensaje</span>
+                        </button>
+                        <p id="formStatus" class="form-status"></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">ME</div>
+            <p>&copy; 2026 Maison Empanada. Todos los derechos reservados.</p>
+            <p class="footer-note">maisonempanadas.com</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
